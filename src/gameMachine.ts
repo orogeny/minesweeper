@@ -1,32 +1,37 @@
-import { createMachine } from "xstate";
-import { Cell, GameConfig, gameConfigs, layMines } from "./game";
-import { getNeighbours } from "./utils";
+import { assign, createMachine } from "xstate";
+import { GameConfig, gameConfigs } from "./game";
 
 type GameContext = {
   config: GameConfig;
-  flags: number;
-  cells: Cell[];
-  findNeighbours: (index: number) => Set<number>;
+  // flags: number;
+  // cells: Cell[];
+  // findNeighbours: (index: number) => Set<number>;
 };
 
 const gameMachine = createMachine({
+  types: {
+    context: {} as GameContext,
+    events: {} as { type: "game.setup"; level: string },
+  },
   id: "game",
   initial: "start",
+  context: {
+    config: {
+      level: "",
+      width: 0,
+      height: 0,
+      mines: 0,
+      timeLimit: 0,
+    },
+  },
   states: {
     start: {
       on: {
-        SETUP: {
-          actions: ({ context, event: { level } }) => {
-            const config = gameConfigs.find((c) => c.level === level)!;
-
-            const flags = config.mines;
-            const cells = layMines(config.width, config.height, config.mines);
-            const findNeighbours = getNeighbours(config.width, config.height);
-
-            context.config = { config, flags, cells, findNeighbours };
-
-            console.log(`game for "${level}" level has been setup`);
-          },
+        "game.setup": {
+          actions: assign({
+            config: ({ event: { level } }) =>
+              gameConfigs.find((c) => c.level === level)!,
+          }),
           target: "ready",
         },
       },

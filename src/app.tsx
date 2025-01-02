@@ -7,8 +7,10 @@ import { gameMachine } from "./gameMachine";
 function App() {
   const [state, send] = useMachine(gameMachine);
 
+  console.log("level", state.context.config.level);
+
   const handleGameSelection = (level: string) => {
-    send({ type: "SETUP", level });
+    send({ type: "game.setup", level });
   };
 
   if (state.value === "start") {
