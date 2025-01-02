@@ -1,14 +1,23 @@
+import { useMachine } from "@xstate/react";
+import { Board } from "./components/board";
 import { SelectGame } from "./components/select_game";
 import { gameConfigs } from "./game";
+import { gameMachine } from "./gameMachine";
 
 function App() {
+  const [state, send] = useMachine(gameMachine);
+
   const handleGameSelection = (level: string) => {
-    console.log(`You selected ${level}`);
+    send({ type: "SETUP", level });
   };
 
-  return (
-    <SelectGame configs={gameConfigs} handleSelection={handleGameSelection} />
-  );
+  if (state.value === "start") {
+    return (
+      <SelectGame configs={gameConfigs} handleSelection={handleGameSelection} />
+    );
+  }
+
+  return <Board />;
 }
 
 export { App };
