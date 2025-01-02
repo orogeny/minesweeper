@@ -1,31 +1,28 @@
-import { Cell } from "./components/square";
+import { getNeighbours } from "./utils";
 
-type Game = {
+type GameConfig = {
+  level: string;
   width: number;
   height: number;
-  mines: Set<number>;
-  cells: Cell[];
-  findNeighbours: (index: number) => Set<number>;
+  mines: number;
+  timeLimit: number;
 };
 
-const machine = {
-  initial: "idle",
-  states: {
-    idle: {
-      SETUP: "loading",
-    },
-    loading: {
-      RESOLVE: "ready",
-      REJECT: "rejected",
-    },
-    ready: {
-      FLAG: "flagg",
-    },
-    rejected: {},
-  },
+type Cell = {
+  exposed: boolean;
+  flagged: boolean;
+  mined: boolean;
+  adjacentMines: number;
 };
 
-function setup(
+const gameConfigs: GameConfig[] = [
+  { level: "Classic", width: 8, height: 8, mines: 9, timeLimit: 300 },
+  { level: "Easy", width: 9, height: 9, mines: 10, timeLimit: 360 },
+  { level: "Medium", width: 16, height: 16, mines: 40, timeLimit: 600 },
+  { level: "Expert", width: 30, height: 16, mines: 99, timeLimit: 1200 },
+];
+
+function layMines(
   width: number,
   height: number,
   mines: number,
@@ -53,40 +50,8 @@ function setup(
     ),
   }));
 
-  return {
-    width,
-    height,
-    mines: mineLocations,
-    cells,
-    findNeighbours,
-  };
+  return cells;
 }
 
-function getNeighbours(width: number, height: number) {
-  return (index: number) => {
-    const neighbours = new Set<number>();
-
-    const col = index % width;
-    const row = Math.floor(index / width);
-
-    if (row - 1 >= 0) {
-      if (col - 1 >= 0) neighbours.add((row - 1) * width + (col - 1));
-      neighbours.add((row - 1) * width + col);
-      if (col + 1 < width) neighbours.add((row - 1) * width + col + 1);
-    }
-
-    if (col - 1 >= 0) neighbours.add(row * width + col - 1);
-    if (col + 1 < width) neighbours.add(row * width + col + 1);
-
-    if (row + 1 < height) {
-      if (col - 1 >= 0) neighbours.add((row + 1) * width + col - 1);
-      neighbours.add((row + 1) * width + col);
-      if (col + 1 < width) neighbours.add((row + 1) * width + col + 1);
-    }
-
-    return neighbours;
-  };
-}
-
-export { setup };
-export type { Game };
+export { gameConfigs, layMines };
+export type { Cell, GameConfig };
