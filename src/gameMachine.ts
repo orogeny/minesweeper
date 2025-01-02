@@ -1,37 +1,44 @@
-import { createMachine } from "xstate";
-import { Cell, GameConfig } from "./game";
+import { assign, createMachine } from "xstate";
+import { GameConfig, gameConfigs } from "./game";
 
 type GameContext = {
   config: GameConfig;
-  flags: number;
-  cells: Cell[];
+  // flags: number;
+  // cells: Cell[];
+  // findNeighbours: (index: number) => Set<number>;
 };
 
 const gameMachine = createMachine({
+  types: {
+    context: {} as GameContext,
+    events: {} as { type: "game.setup"; level: string },
+  },
   id: "game",
-  initial: "idle",
+  initial: "start",
+  context: {
+    config: {
+      level: "",
+      width: 0,
+      height: 0,
+      mines: 0,
+      timeLimit: 0,
+    },
+  },
   states: {
-    idle: {
+    start: {
       on: {
         "game.setup": {
-          target: "loading",
-        },
-      },
-    },
-    loading: {
-      on: {
-        "game.loaded": {
+          actions: assign({
+            config: ({ event: { level } }) =>
+              gameConfigs.find((c) => c.level === level)!,
+          }),
           target: "ready",
-        },
-        "game.failed": {
-          target: "error",
         },
       },
     },
     ready: {},
     lost: {},
     won: {},
-    error: {},
   },
 });
 

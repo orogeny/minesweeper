@@ -8,8 +8,13 @@
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-size: 16px;
+}
 
+#root {
   min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .select-game .instructions {
@@ -22,7 +27,6 @@ body {
   padding: 2rem;
 
   display: flex;
-  flex: 1 1 0%;
   flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
@@ -57,4 +61,18 @@ body {
   .mines {
     font-weight: 500;
   }
+}
+
+.board {
+  flex: 1 1 100%;
+
+  display: flex;
+}
+
+.grid {
+  flex: 1 1 0%;
+}
+
+.controls {
+  flex: none;
 }
