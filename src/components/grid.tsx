@@ -1,5 +1,5 @@
 function Grid() {
-  return <div className="grid"></div>;
+  return <div className="grid">The grid</div>;
 }
 
 export { Grid };
